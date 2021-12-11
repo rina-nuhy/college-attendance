@@ -42,28 +42,20 @@ def admin_home(request):
 
 
 def add_staff(request):
-    form = StaffForm(request.POST or None, request.FILES or None)
+    form = StaffForm(request.POST or None, request.FILES)
     context = {'form': form, 'page_title': 'Add Staff'}
     if request.method == 'POST':
         if form.is_valid():
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             address = form.cleaned_data.get('address')
-            email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
-            password = form.cleaned_data.get('password')
             course = form.cleaned_data.get('course')
             passport = request.FILES.get('profile_pic')
             fs = FileSystemStorage()
             filename = fs.save(passport.name, passport)
             passport_url = fs.url(filename)
             try:
-                user = CustomUser.objects.create_user(
-                    email=email, password=password, user_type=2, first_name=first_name, last_name=last_name, profile_pic=passport_url)
-                user.gender = gender
-                user.address = address
-                user.staff.course = course
-                user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_staff'))
 
@@ -83,9 +75,8 @@ def add_student(request):
             first_name = student_form.cleaned_data.get('first_name')
             last_name = student_form.cleaned_data.get('last_name')
             address = student_form.cleaned_data.get('address')
-            email = student_form.cleaned_data.get('email')
+            
             gender = student_form.cleaned_data.get('gender')
-            password = student_form.cleaned_data.get('password')
             course = student_form.cleaned_data.get('course')
             session = student_form.cleaned_data.get('session')
             passport = request.FILES['profile_pic']
@@ -93,13 +84,6 @@ def add_student(request):
             filename = fs.save(passport.name, passport)
             passport_url = fs.url(filename)
             try:
-                user = CustomUser.objects.create_user(
-                    email=email, password=password, user_type=3, first_name=first_name, last_name=last_name, profile_pic=passport_url)
-                user.gender = gender
-                user.address = address
-                user.student.session = session
-                user.student.course = course
-                user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_student'))
             except Exception as e:
@@ -209,15 +193,12 @@ def edit_staff(request, staff_id):
             last_name = form.cleaned_data.get('last_name')
             address = form.cleaned_data.get('address')
             username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
             course = form.cleaned_data.get('course')
             passport = request.FILES.get('profile_pic') or None
             try:
                 user = CustomUser.objects.get(id=staff.admin.id)
-                user.username = username
-                user.email = email
                 if password != None:
                     user.set_password(password)
                 if passport != None:
@@ -257,10 +238,7 @@ def edit_student(request, student_id):
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             address = form.cleaned_data.get('address')
-            username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
-            password = form.cleaned_data.get('password') or None
             course = form.cleaned_data.get('course')
             session = form.cleaned_data.get('session')
             passport = request.FILES.get('profile_pic') or None
@@ -271,18 +249,6 @@ def edit_student(request, student_id):
                     filename = fs.save(passport.name, passport)
                     passport_url = fs.url(filename)
                     user.profile_pic = passport_url
-                user.username = username
-                user.email = email
-                if password != None:
-                    user.set_password(password)
-                user.first_name = first_name
-                user.last_name = last_name
-                student.session = session
-                user.gender = gender
-                user.address = address
-                student.course = course
-                user.save()
-                student.save()
                 messages.success(request, "Successfully Updated")
                 return redirect(reverse('edit_student', args=[student_id]))
             except Exception as e:
@@ -390,16 +356,16 @@ def edit_session(request, session_id):
         return render(request, "hod_template/edit_session_template.html", context)
 
 
-@csrf_exempt
-def check_email_availability(request):
-    email = request.POST.get("email")
-    try:
-        user = CustomUser.objects.filter(email=email).exists()
-        if user:
-            return HttpResponse(True)
-        return HttpResponse(False)
-    except Exception as e:
-        return HttpResponse(False)
+# @csrf_exempt
+# def check_email_availability(request):
+#     email = request.POST.get("email")
+#     try:
+#         user = CustomUser.objects.filter(email=email).exists()
+#         if user:
+#             return HttpResponse(True)
+#         return HttpResponse(False)
+#     except Exception as e:
+#         return HttpResponse(False)
 
 
 @csrf_exempt

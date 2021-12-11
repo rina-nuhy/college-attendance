@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
 
-    # path("get_attendance", views.get_attendance, name='get_attendance'),
+#     path("get_attendance", views.get_attendance, name='get_attendance'),
     # path("firebase-messaging-sw.js", views.showFirebaseJS, name='showFirebaseJS'),
     path("", views.admin_home, name='admin_home'),
     path("staff/add", views.add_staff, name='add_staff'),
@@ -19,8 +19,8 @@ urlpatterns = [
          name='admin_notify_staff'),
     # path("admin_view_profile", views.admin_view_profile,
     #      name='admin_view_profile'),
-    path("check_email_availability", views.check_email_availability,
-         name="check_email_availability"),
+#     path("check_email_availability", views.check_email_availability,
+#          name="check_email_availability"),
     path("session/manage/", views.manage_session, name='manage_session'),
     path("session/edit/<int:session_id>",
          views.edit_session, name='edit_session'),
